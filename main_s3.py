@@ -1,4 +1,4 @@
-from aws_s3_functions import Functions_S3
+from functions_s3.aws_functions_s3 import Functions_S3
 
 local_file = "DATA/BASE_COM_CEP.xlsx"
 bucket_name = "analyticsitaughp00569"
