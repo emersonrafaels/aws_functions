@@ -1,7 +1,5 @@
 # IMPORTING LIBRARIES
 import os
-import logging
-from logging.config import fileConfig
 from pathlib import Path
 from inspect import stack
 
@@ -10,9 +8,10 @@ import boto3
 import botocore
 import pandas as pd
 
+import execute_log
+
 # INICIALIZANDO O LOGGER
-fileConfig('logging_config.ini')
-logger = logging.getLogger()
+execute_log.startLog()
 
 dict_file_format = {".xlsx": "excel",
                     ".csv": "csv",
@@ -62,14 +61,14 @@ class Functions_S3():
                 s3_client.create_bucket(Bucket=bucket_name,
                                         CreateBucketConfiguration=location)
 
-            print("BUCKET CREATED SUCCESSFULLY")
-            print("BUCKET NAME: {}".format(bucket_name))
-            print("-"*50)
+            execute_log.info("BUCKET CREATED SUCCESSFULLY")
+            execute_log.info("BUCKET NAME: {}".format(bucket_name))
+            execute_log.info("-"*50)
 
             validator = True
 
         except Exception as ex:
-            print(ex)
+            execute_log.error(ex)
 
         return validator
 
@@ -96,15 +95,15 @@ class Functions_S3():
             response = s3.list_buckets()
             list_buckets = [bucket for bucket in response['Buckets']]
 
-            print('LIST - BUCKETS')
+            execute_log.info('LIST - BUCKETS')
 
             for bucket in list_buckets:
-                print("BUCKET: {}".format(bucket["Name"]))
+                execute_log.info("BUCKET: {}".format(bucket["Name"]))
 
-            print("-" * 50)
+                execute_log.info("-" * 50)
 
         except Exception as ex:
-            print(ex)
+            execute_log.error(ex)
 
         return list_buckets
 
@@ -141,25 +140,25 @@ class Functions_S3():
 
             list_all_objects = [content for content in response.get('Contents', [])]
 
-            print('LIST - OBJECT')
-            print("BUCKET: {}".format(bucket_name))
+            execute_log.info('LIST - OBJECT')
+            execute_log.info("BUCKET: {}".format(bucket_name))
 
             # ITER OVER ALL OBJECTS
             for idx, object in enumerate(list_all_objects):
                 # VERIFYING DESIRED FORMATS
                 if specified_format:
-                    print("SPECIFIED FORMATS: {}".format(specified_format))
+                    execute_log.info("SPECIFIED FORMATS: {}".format(specified_format))
                     if object["Key"].endswith(tuple(specified_format)):
-                        print("OBJECT: {}".format(object["Key"]))
+                        execute_log.info("OBJECT: {}".format(object["Key"]))
                         list_specified_format_objects.append(object)
                 else:
-                    print("OBJECT: {}".format(object["Key"]))
+                    execute_log.info("OBJECT: {}".format(object["Key"]))
                     list_specified_format_objects.append(object)
 
-            print("-" * 50)
+                    execute_log.info("-" * 50)
 
         except Exception as ex:
-            print(ex)
+            execute_log.error(ex)
 
         return list_all_objects, list_specified_format_objects
 
@@ -194,25 +193,25 @@ class Functions_S3():
             s3_client = boto3.client('s3')
 
             # UPLOAD OBJECT
-            logger.info('Uploading object ...')
+            execute_log.info('Uploading object ...')
 
             if os.path.exists(local_file):
 
                 s3_client.upload_file(local_file, bucket_name, object_key)
-                logger.info('Uploaded')
+                execute_log.info('Uploaded')
 
                 validator = True
 
             else:
-                logger.info("Local file not found")
+                execute_log.info("Local file not found")
 
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "NoSuchBucket":
-                logger.error("Error: Bucket does not exist!!")
+                execute_log.error("Error: Bucket does not exist!!")
             elif e.response['Error']['Code'] == "InvalidBucketName":
-                logger.error("Error: Invalid Bucket name!!")
+                execute_log.error("Error: Invalid Bucket name!!")
             elif e.response['Error']['Code'] == "AllAccessDisabled":
-                logger.error("Error: You do not have access to the Bucket!!")
+                execute_log.error("Error: You do not have access to the Bucket!!")
             else:
                 raise
 
@@ -250,10 +249,10 @@ class Functions_S3():
                     # THE METHOD ALL FILES IN A FOLDER
                     file_to_read = prefix
 
-                    logger.info("Reading dataframe using Prefix Path: {} - Format: {}".format(file_to_read, file_format))
+                    execute_log.info("Reading dataframe using Prefix Path: {} - Format: {}".format(file_to_read, file_format))
 
                 else:
-                    logger.error("To read a folder (using prefix) is necessary to specify a files format")
+                    execute_log.error("To read a folder (using prefix) is necessary to specify a files format")
                     return False, df
 
             if isinstance(filepath, str):
@@ -265,7 +264,7 @@ class Functions_S3():
                 # THE METHOD WILL READ A UNIQUE FILE
                 file_to_read = filepath
 
-                logger.info("Reading dataframe using Path: {} - Format: {}".format(file_to_read, file_format))
+                execute_log.info("Reading dataframe using Path: {} - Format: {}".format(file_to_read, file_format))
 
             if isinstance(file_to_read, (str, tuple, list)) and file_format:
 
@@ -288,15 +287,15 @@ class Functions_S3():
                     validator = True
 
             else:
-                logger.info("filepath must be a string or a (tuple, list)")
+                execute_log.info("filepath must be a string or a (tuple, list)")
 
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "NoSuchBucket":
-                logger.error("Error: Bucket does not exist!!")
+                execute_log.error("Error: Bucket does not exist!!")
             elif e.response['Error']['Code'] == "InvalidBucketName":
-                logger.error("Error: Invalid Bucket name!!")
+                execute_log.error("Error: Invalid Bucket name!!")
             elif e.response['Error']['Code'] == "AllAccessDisabled":
-                logger.error("Error: You do not have access to the Bucket!!")
+                execute_log.error("Error: You do not have access to the Bucket!!")
             else:
                 raise
 

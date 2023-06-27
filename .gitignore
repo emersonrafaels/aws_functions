@@ -317,5 +317,4 @@ pyrightconfig.json
 .ionide
 
 .idea
-
-# End of https://www.toptal.com/developers/gitignore/api/jupyternotebooks,python,visualstudiocode,pycharm
+config_aws_codes/.secrets*
