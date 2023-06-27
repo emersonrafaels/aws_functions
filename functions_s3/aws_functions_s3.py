@@ -217,6 +217,48 @@ class Functions_S3():
 
         return validator
 
+    @staticmethod
+    def delete_objects_s3(filepath):
+
+        """
+
+        DELETE OBJECTS IN S3 BUCKET.
+
+        # Arguments
+            :param filepath: Bucket + Filename to delete (String)
+
+        # Returns
+            :return validator: True if file uploaded,
+                               else False (Boolean)
+
+        """
+
+        # INIT FUNCTION VALIDATOR
+        validator = False
+
+        try:
+
+            execute_log.info("Deleting: {}".format(filepath))
+
+            # DELETE OBJECT
+            wr.s3.delete_objects(filepath)
+
+            execute_log.info("Successfully deleted")
+
+            validator = True
+
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "NoSuchBucket":
+                execute_log.error("Error: Bucket does not exist!!")
+            elif e.response['Error']['Code'] == "InvalidBucketName":
+                execute_log.error("Error: Invalid Bucket name!!")
+            elif e.response['Error']['Code'] == "AllAccessDisabled":
+                execute_log.error("Error: You do not have access to the Bucket!!")
+            else:
+                raise
+
+        return validator
+
 
     @staticmethod
     def read_s3_file(filepath=None, file_format=None, prefix=None):
