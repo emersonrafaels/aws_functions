@@ -1,6 +1,6 @@
 from functions_s3.aws_functions_s3 import Functions_S3
 
-local_file = "DATA/BASE_COM_CEP.xlsx"
+local_file = "data_examples/data_with_location.xlsx"
 bucket_name = "analyticsitaughp00569"
 object_key = "data/uploaded/footprint.xlsx"
 
