@@ -13,22 +13,20 @@ import execute_log
 # INICIALIZANDO O LOGGER
 execute_log.startLog()
 
-dict_file_format = {".xlsx": "excel",
-                    ".csv": "csv",
-                    ".json": "json",
-                    ".parquet": "parquet"}
+dict_file_format = {
+    ".xlsx": "excel",
+    ".csv": "csv",
+    ".json": "json",
+    ".parquet": "parquet",
+}
 
 
-class Functions_S3():
-
+class Functions_S3:
     def __init__(self):
-
         pass
-
 
     @staticmethod
     def create_s3_bucket(bucket_name, region=None):
-
         """
 
         CREATE AN S3 BUCKET IN A SPECIFIED VERSION
@@ -53,17 +51,18 @@ class Functions_S3():
 
         try:
             if region is None:
-                s3_client = boto3.client('s3')
+                s3_client = boto3.client("s3")
                 s3_client.create_bucket(Bucket=bucket_name)
             else:
-                s3_client = boto3.client('s3', region_name=region)
-                location = {'LocationConstraint': region}
-                s3_client.create_bucket(Bucket=bucket_name,
-                                        CreateBucketConfiguration=location)
+                s3_client = boto3.client("s3", region_name=region)
+                location = {"LocationConstraint": region}
+                s3_client.create_bucket(
+                    Bucket=bucket_name, CreateBucketConfiguration=location
+                )
 
             execute_log.info("BUCKET CREATED SUCCESSFULLY")
             execute_log.info("BUCKET NAME: {}".format(bucket_name))
-            execute_log.info("-"*50)
+            execute_log.info("-" * 50)
 
             validator = True
 
@@ -72,10 +71,8 @@ class Functions_S3():
 
         return validator
 
-
     @staticmethod
     def list_s3_existing_buckets():
-
         """
 
         GET ALL BUCKETS IN ACCOUNT.
@@ -89,13 +86,13 @@ class Functions_S3():
 
         try:
             # CONNECTING TO S3
-            s3 = boto3.client('s3')
+            s3 = boto3.client("s3")
 
             # GETTING LIST OF BUCKETS
             response = s3.list_buckets()
-            list_buckets = [bucket for bucket in response['Buckets']]
+            list_buckets = [bucket for bucket in response["Buckets"]]
 
-            execute_log.info('LIST - BUCKETS')
+            execute_log.info("LIST - BUCKETS")
 
             for bucket in list_buckets:
                 execute_log.info("BUCKET: {}".format(bucket["Name"]))
@@ -109,7 +106,6 @@ class Functions_S3():
 
     @staticmethod
     def list_s3_objects(bucket_name, prefix=None, specified_format=None):
-
         """
 
         GET ALL OBJECTS IN S3 BUCKET.
@@ -128,19 +124,18 @@ class Functions_S3():
 
         try:
             # CONNECTING TO S3
-            s3 = boto3.client('s3')
+            s3 = boto3.client("s3")
 
             if prefix:
                 # GETTING LIST OF BUCKETS WITH DEFINED PREFIX
-                response = s3.list_objects_v2(Bucket=bucket_name,
-                                              Prefix=prefix)
+                response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
             else:
                 # GETTING LIST OF BUCKETS WITHOUT DEFINED PREFIX
                 response = s3.list_objects_v2(Bucket=bucket_name)
 
-            list_all_objects = [content for content in response.get('Contents', [])]
+            list_all_objects = [content for content in response.get("Contents", [])]
 
-            execute_log.info('LIST - OBJECT')
+            execute_log.info("LIST - OBJECT")
             execute_log.info("BUCKET: {}".format(bucket_name))
 
             # ITER OVER ALL OBJECTS
@@ -162,10 +157,8 @@ class Functions_S3():
 
         return list_all_objects, list_specified_format_objects
 
-
     @staticmethod
     def upload_file_to_s3(local_file, bucket_name, object_key):
-
         """
 
         UPLOAD A LOCAL FILE TO S3 BUCKET.
@@ -188,17 +181,15 @@ class Functions_S3():
         validator = False
 
         try:
-
             # CONNECTING TO S3
-            s3_client = boto3.client('s3')
+            s3_client = boto3.client("s3")
 
             # UPLOAD OBJECT
-            execute_log.info('Uploading object ...')
+            execute_log.info("Uploading object ...")
 
             if os.path.exists(local_file):
-
                 s3_client.upload_file(local_file, bucket_name, object_key)
-                execute_log.info('Uploaded')
+                execute_log.info("Uploaded")
 
                 validator = True
 
@@ -206,11 +197,11 @@ class Functions_S3():
                 execute_log.info("Local file not found")
 
         except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "NoSuchBucket":
+            if e.response["Error"]["Code"] == "NoSuchBucket":
                 execute_log.error("Error: Bucket does not exist!!")
-            elif e.response['Error']['Code'] == "InvalidBucketName":
+            elif e.response["Error"]["Code"] == "InvalidBucketName":
                 execute_log.error("Error: Invalid Bucket name!!")
-            elif e.response['Error']['Code'] == "AllAccessDisabled":
+            elif e.response["Error"]["Code"] == "AllAccessDisabled":
                 execute_log.error("Error: You do not have access to the Bucket!!")
             else:
                 raise
@@ -219,7 +210,6 @@ class Functions_S3():
 
     @staticmethod
     def delete_objects_s3(filepath):
-
         """
 
         DELETE OBJECTS IN S3 BUCKET.
@@ -237,7 +227,6 @@ class Functions_S3():
         validator = False
 
         try:
-
             execute_log.info("Deleting: {}".format(filepath))
 
             # DELETE OBJECT
@@ -248,21 +237,19 @@ class Functions_S3():
             validator = True
 
         except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "NoSuchBucket":
+            if e.response["Error"]["Code"] == "NoSuchBucket":
                 execute_log.error("Error: Bucket does not exist!!")
-            elif e.response['Error']['Code'] == "InvalidBucketName":
+            elif e.response["Error"]["Code"] == "InvalidBucketName":
                 execute_log.error("Error: Invalid Bucket name!!")
-            elif e.response['Error']['Code'] == "AllAccessDisabled":
+            elif e.response["Error"]["Code"] == "AllAccessDisabled":
                 execute_log.error("Error: You do not have access to the Bucket!!")
             else:
                 raise
 
         return validator
 
-
     @staticmethod
     def read_s3_file(filepath=None, file_format=None, prefix=None):
-
         """
 
         READ A FILE FROM S3 BUCKET.
@@ -291,14 +278,19 @@ class Functions_S3():
                     # THE METHOD ALL FILES IN A FOLDER
                     file_to_read = prefix
 
-                    execute_log.info("Reading dataframe using Prefix Path: {} - Format: {}".format(file_to_read, file_format))
+                    execute_log.info(
+                        "Reading dataframe using Prefix Path: {} - Format: {}".format(
+                            file_to_read, file_format
+                        )
+                    )
 
                 else:
-                    execute_log.error("To read a folder (using prefix) is necessary to specify a files format")
+                    execute_log.error(
+                        "To read a folder (using prefix) is necessary to specify a files format"
+                    )
                     return False, df
 
             if isinstance(filepath, str):
-
                 # GET THE EXTENSION
                 if not file_format:
                     file_format = dict_file_format.get(Path(filepath).suffix)
@@ -306,21 +298,21 @@ class Functions_S3():
                 # THE METHOD WILL READ A UNIQUE FILE
                 file_to_read = filepath
 
-                execute_log.info("Reading dataframe using Path: {} - Format: {}".format(file_to_read, file_format))
+                execute_log.info(
+                    "Reading dataframe using Path: {} - Format: {}".format(
+                        file_to_read, file_format
+                    )
+                )
 
             if isinstance(file_to_read, (str, tuple, list)) and file_format:
-
                 if file_format == "csv":
                     df = wr.s3.read_csv(file_to_read)
 
                 elif file_format == "excel":
                     df = wr.s3.read_excel(file_to_read)
 
-                elif file_format == "excel":
-                    df = wr.s3.read_excel(file_to_read)
-
                 elif file_format == "parquet":
-                    df = wr.s3.read_json(file_to_read)
+                    df = wr.s3.read_parquet(file_to_read)
 
                 elif file_format == "json":
                     df = wr.s3.read_json(file_to_read)
@@ -332,11 +324,11 @@ class Functions_S3():
                 execute_log.info("filepath must be a string or a (tuple, list)")
 
         except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "NoSuchBucket":
+            if e.response["Error"]["Code"] == "NoSuchBucket":
                 execute_log.error("Error: Bucket does not exist!!")
-            elif e.response['Error']['Code'] == "InvalidBucketName":
+            elif e.response["Error"]["Code"] == "InvalidBucketName":
                 execute_log.error("Error: Invalid Bucket name!!")
-            elif e.response['Error']['Code'] == "AllAccessDisabled":
+            elif e.response["Error"]["Code"] == "AllAccessDisabled":
                 execute_log.error("Error: You do not have access to the Bucket!!")
             else:
                 raise

@@ -32,7 +32,6 @@ from utils.generic_functions import create_path, verify_exists
 
 
 def configure_logging(dir_save_logs: str) -> bool:
-
     """
 
     CONFIGURANDO OS LOGS (LOGGING).
@@ -55,7 +54,6 @@ def configure_logging(dir_save_logs: str) -> bool:
     # CONFIGURAÇÕES DE LOG
     try:
         if settings.APPNAME not in settings.LOGGERS.keys():
-
             # CRIANDO O LOGGER
             logger = logging.getLogger(settings.APPNAME)
 
@@ -64,7 +62,6 @@ def configure_logging(dir_save_logs: str) -> bool:
             logger.setLevel(settings.LOGLEVEL)
 
             if not len(logger.handlers):
-
                 # DEFININDO O LOCAL DO ARQUIVO DE LOG
                 dir_filename = path.join(dir_save_logs, settings.LOG_FILENAME)
 
@@ -103,7 +100,6 @@ def configure_logging(dir_save_logs: str) -> bool:
 
 
 def startLog() -> bool:
-
     """
 
     CONFIGURANDO OS LOGS (LOGGING).
@@ -129,12 +125,10 @@ def startLog() -> bool:
     validator = verify_exists(dir_save_logs)
 
     if validator is False:
-
         # CRIANDO O DIRETÓRIO DE SAVE DOS LOGS
         validator = create_path(dir_save_logs)
 
     if validator:
-
         # CONFIGURANDO O USO DA LOGGING (REGISTRANDO NO ARQUIVO DE LOG E NO CONSOLE)
         validator = configure_logging(dir_save_logs=dir_save_logs)
 
@@ -142,7 +136,6 @@ def startLog() -> bool:
 
 
 def on_log(msg: str = "", origin: str = None, image: str = None, idt: str = None):
-
     """
 
     REALIZANDO O REGISTRO DE INÍCIO DOS LOGS
@@ -176,7 +169,6 @@ def start(
     idt: str = None,
     start_time: str = None,
 ):
-
     """
 
     REALIZANDO REGISTRO DE START
@@ -211,7 +203,6 @@ def end(
     idt: str = None,
     end_time: str = None,
 ):
-
     """
 
     REALIZANDO REGISTRO DE ERRO
@@ -240,7 +231,6 @@ def end(
 
 
 def error(msg: str = "", origin: str = None, image: str = None, idt: str = None):
-
     """
 
     REALIZANDO REGISTRO DE ERRO
@@ -268,7 +258,6 @@ def error(msg: str = "", origin: str = None, image: str = None, idt: str = None)
 
 
 def warnings(msg: str = "", origin: str = None, image: str = None, idt: str = None):
-
     """
 
     REALIZANDO O REGISTRO DE WARNINGS
@@ -296,7 +285,6 @@ def warnings(msg: str = "", origin: str = None, image: str = None, idt: str = No
 
 
 def info(msg: str = "", origin: str = None, image: str = None, idt: str = None):
-
     """
 
     REALIZANDO REGISTRO DE INFORMAÇÕES

@@ -25,7 +25,6 @@ import re
 
 
 def verify_exists(dir: str) -> bool:
-
     """
 
     FUNÇÃO PARA VERIFICAR SE UM DIRETÓRIO (PATH) EXISTE.
@@ -52,7 +51,6 @@ def verify_exists(dir: str) -> bool:
 def get_files_directory(
     directory: str, format_types_accepted: Union[tuple, list]
 ) -> list:
-
     """
 
     FUNÇÃO PARA OBTER OS ARQUIVOS EM UM DETERMINADO DIRETÓRIO
@@ -85,7 +83,6 @@ def get_files_directory(
 
 
 def create_path(dir: str) -> bool:
-
     """
 
     FUNÇÃO PARA CRIAR UM DIRETÓRIO (PATH).
@@ -111,8 +108,8 @@ def create_path(dir: str) -> bool:
 
     return validator
 
-def get_date_time_now(return_type: str) -> str:
 
+def get_date_time_now(return_type: str) -> str:
     """
 
     OBTÉM TODOS OS POSSÍVEIS RETORNOS DE DATA E TEMPO.
